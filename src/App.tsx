@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import WebApp from "@twa-dev/sdk";
 import { useEffect, useState } from "react";
 import capsule from "./lib/capsuleClient";
@@ -85,7 +84,7 @@ function App() {
   return (
     <div>
       <p>{loadingText}</p>
-      {!userShare && (
+      {!userShare && !walletId && (
         <button onClick={generateWallet} disabled={isLoading}>
           Generate wallet
         </button>
