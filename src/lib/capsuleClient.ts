@@ -1,7 +1,7 @@
-import Capsule, { Environment } from "@usecapsule/react-sdk";
+import Capsule, { Environment } from "@usecapsule/web-sdk";
 
 const capsule = new Capsule(
-  Environment.BETA,
+  Environment.DEVELOPMENT,
   import.meta.env.VITE_CAPSULE_API_KEY
 );
 

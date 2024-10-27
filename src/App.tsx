@@ -1,7 +1,7 @@
 import WebApp from "@twa-dev/sdk";
 import { useEffect, useState } from "react";
 import capsule from "./lib/capsuleClient";
-import { WalletType } from "@usecapsule/react-sdk";
+import { WalletType } from "@usecapsule/web-sdk";
 import {
   retrieveChunkedData,
   storeWithChunking,
@@ -59,7 +59,7 @@ function App() {
 
       const pregenWallet = await capsule.createWalletPreGen(
         WalletType.EVM,
-        `${userId}`
+        `${userId}@usecapsule.com`
       );
 
       const share = (await capsule.getUserShare()) || "";
