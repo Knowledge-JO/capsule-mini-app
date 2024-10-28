@@ -43,6 +43,7 @@ function App() {
         setAddress(userAddress);
         await capsule.setUserShare(share);
         setStorageComplete(true);
+        setLoadingText("Retrieved wallets succesfully");
       } else {
         setLoadingText(`Not existing wallet found for user - ${username}`);
       }
@@ -55,6 +56,7 @@ function App() {
 
   async function generateWallet() {
     setIsLoading(true);
+    setLoadingText("Generating wallet");
     try {
       const userId = WebApp.initDataUnsafe.user?.id;
       if (!userId) throw new Error("No userId");
@@ -95,9 +97,11 @@ function App() {
   return (
     <div>
       <p>{loadingText}</p>
-      <p>{storageComplete ? "[Wallet stored]" : ""}</p>
       {!userShare && !walletId && (
-        <button onClick={generateWallet} disabled={isLoading}>
+        <button
+          onClick={generateWallet}
+          disabled={isLoading || storageComplete}
+        >
           Generate wallet
         </button>
       )}
