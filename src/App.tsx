@@ -13,6 +13,7 @@ function App() {
   const [userShare, setUserShare] = useState("");
   const [walletId, setWalletId] = useState("");
   const [loadingText, setLoadingText] = useState("");
+  const [storageComplete, setStorageComplete] = useState(false);
 
   useEffect(() => {
     init();
@@ -41,11 +42,12 @@ function App() {
         setWalletId(userWalletId);
         setAddress(userAddress);
         await capsule.setUserShare(share);
+        setStorageComplete(true);
       } else {
         setLoadingText(`Not existing wallet found for user - ${username}`);
       }
     } catch (error) {
-      console.log("Error initializzing app", error);
+      setLoadingText("Error initializzing app" + error);
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +61,7 @@ function App() {
 
       const pregenWallet = await capsule.createWalletPreGen(
         WalletType.EVM,
-        `${userId}@usecapsule.com`
+        `${userId + crypto.randomUUID().split("-")[0]}@usecapsule.com`
       );
 
       const share = (await capsule.getUserShare()) || "";
@@ -69,13 +71,22 @@ function App() {
 
       // store user share to cloud
 
-      await storeWithChunking(`share-${userId}`, share);
-      await storeWithChunking(`walletId-${userId}`, pregenWallet.id);
+      Promise.all([
+        setLoadingText("Storing wallets"),
+        storeWithChunking(`share-${userId}`, share),
+        storeWithChunking(`walletId-${userId}`, pregenWallet.id),
+      ])
+        .then(() => {
+          setLoadingText("Storage complete");
+          setStorageComplete(true);
+        })
+        .catch((error) => setLoadingText(error.message));
+
       if (pregenWallet.address) {
         await storeWithChunking(`address-${userId}`, pregenWallet.address);
       }
     } catch (error) {
-      console.log("Error generating wallet", error);
+      setLoadingText("Error generating wallet" + error);
     } finally {
       setIsLoading(false);
     }
@@ -84,6 +95,7 @@ function App() {
   return (
     <div>
       <p>{loadingText}</p>
+      <p>{storageComplete ? "[Wallet stored]" : ""}</p>
       {!userShare && !walletId && (
         <button onClick={generateWallet} disabled={isLoading}>
           Generate wallet
